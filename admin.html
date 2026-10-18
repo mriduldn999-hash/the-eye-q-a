@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | THE EYE{% endblock %}
+{% block content %}
+<section class="admin-dashboard">
+  <div class="dashboard-title">
+    <div><p class="eyebrow">PRIVATE CONTROL ROOM</p><h1>Admin <span>Dashboard</span></h1></div>
+    <form action="{{ url_for('admin_logout') }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="secondary" type="submit">LOG OUT</button>
+    </form>
+  </div>
+  <div class="stats">
+    <div class="stat"><span>QUESTIONS</span><strong>{{ questions|length }}</strong></div>
+    <div class="stat"><span>ANSWERS</span><strong>{{ answers|length }}</strong></div>
+    <div class="stat"><span>TOTAL SUBMISSIONS</span><strong>{{ questions|length + answers|length }}</strong></div>
+  </div>
+
+  <div class="section-heading"><span class="red-mark">01</span><h2>Questions received</h2></div>
+  {% for item in questions %}
+  <article class="admin-item">
+    <div class="card-meta"><span>Q-{{ "%04d"|format(item.id) }}</span><span>{{ item.created_at.strftime("%Y-%m-%d %H:%M UTC") }}</span></div>
+    <h3>{{ item.content }}</h3>
+    <p>Display name: <strong>{{ item.display_name }}</strong></p>
+    <p>Answers: {{ item.answers|length }}</p>
+    <form method="post" action="{{ url_for('delete_submission', item_id=item.id) }}" onsubmit="return confirm('Delete this question and its answers?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="danger" type="submit">DELETE QUESTION</button>
+    </form>
+  </article>
+  {% else %}<p class="empty">No questions submitted yet.</p>{% endfor %}
+
+  <div class="section-heading answers-heading"><span class="red-mark">02</span><h2>All answers</h2></div>
+  {% for item in answers %}
+  <article class="admin-item">
+    <div class="card-meta"><span>A-{{ "%04d"|format(item.id) }}</span><span>{{ item.created_at.strftime("%Y-%m-%d %H:%M UTC") }}</span></div>
+    <p>{{ item.content }}</p>
+    <p>Answer by: <strong>{{ item.display_name }}</strong> · Question ID: {{ item.question_id }}</p>
+    <form method="post" action="{{ url_for('delete_submission', item_id=item.id) }}" onsubmit="return confirm('Delete this answer?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="danger" type="submit">DELETE ANSWER</button>
+    </form>
+  </article>
+  {% else %}<p class="empty">No answers submitted yet.</p>{% endfor %}
+</section>
+{% endblock %}

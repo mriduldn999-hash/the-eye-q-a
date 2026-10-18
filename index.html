@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}THE EYE — Anonymous Q&A{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="sigil" aria-label="mysterious eye symbol"><span>◉</span><i></i></div>
+  <p class="eyebrow">ASK • ANSWER • DISCOVER</p>
+  <h1>THE TRUTH IS<br><span>IN THE QUESTIONS.</span></h1>
+  <p class="subtitle">A mysterious corner for curious minds. Use a display name to post questions and answers.</p>
+</section>
+
+<section class="panel ask-panel">
+  <div class="section-heading"><span class="red-mark">01</span><h2>Ask the unknown</h2></div>
+  <form action="{{ url_for('ask') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="qname">Display name</label>
+    <input id="qname" name="display_name" maxlength="60" required placeholder="What should we call you?">
+    <label for="qcontent">Your question</label>
+    <textarea id="qcontent" name="content" maxlength="2000" required rows="3" placeholder="Write your question..."></textarea>
+    <button type="submit">SUBMIT QUESTION <span>↗</span></button>
+  </form>
+</section>
+
+<section class="questions">
+  <div class="section-heading"><span class="red-mark">02</span><h2>Recent transmissions</h2></div>
+  {% for question in questions %}
+  <article class="question-card">
+    <div class="card-meta"><span>Q-{{ "%04d"|format(question.id) }}</span><span>{{ question.created_at.strftime("%d %b %Y · %H:%M UTC") }}</span></div>
+    <h3>{{ question.content }}</h3>
+    <p class="byline">Submitted by <strong>{{ question.display_name }}</strong></p>
+    {% for answer in question.answers|sort(attribute='created_at') %}
+      <div class="answer">
+        <p>{{ answer.content }}</p>
+        <small>Answer by <strong>{{ answer.display_name }}</strong> · {{ answer.created_at.strftime("%d %b %Y · %H:%M UTC") }}</small>
+      </div>
+    {% endfor %}
+    <details class="answer-form">
+      <summary>Transmit an answer +</summary>
+      <form action="{{ url_for('answer', question_id=question.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Display name</label>
+        <input name="display_name" maxlength="60" required placeholder="Your display name">
+        <label>Your answer</label>
+        <textarea name="content" maxlength="2000" required rows="2" placeholder="Share what you know..."></textarea>
+        <button type="submit">SUBMIT ANSWER ↗</button>
+      </form>
+    </details>
+  </article>
+  {% else %}
+  <div class="empty">No transmissions yet. Be the first to ask.</div>
+  {% endfor %}
+</section>
+<p class="privacy-note">Public submissions show the display name you enter. Avoid sharing passwords, contact details, or other sensitive information.</p>
+{% endblock %}

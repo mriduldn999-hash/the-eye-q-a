@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Admin Access | THE EYE{% endblock %}
+{% block content %}
+<section class="admin-wrap">
+  <div class="sigil small-sigil"><span>◉</span><i></i></div>
+  <p class="eyebrow">RESTRICTED AREA</p>
+  <h1>ADMIN <span>ACCESS</span></h1>
+  <form class="panel" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="username">Username</label>
+    <input id="username" name="username" required autocomplete="username">
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" required autocomplete="current-password">
+    <button type="submit">ENTER DASHBOARD ↗</button>
+  </form>
+  <p class="privacy-note">Admin credentials are configured by the site owner in deployment settings.</p>
+</section>
+{% endblock %}
